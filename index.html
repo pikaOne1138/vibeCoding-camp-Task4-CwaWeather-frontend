@@ -4,349 +4,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>森森天氣 v2.0</title>
-    <link rel="icon" type="image/png" href="./icon-v2.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
+    <title>Taiwan Weather Pokedex</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --ac-green: #7DE1A9;
-            --ac-bg-pattern: #8FD8AF;
-            --ac-cream: #FFFEF2;
-            --ac-yellow: #F9F195;
-            --ac-brown: #796452;
-            --ac-blue: #4FB5D9;
-            --ac-dark: #58504A;
-            --ac-orange: #FFAA5E;
-            --ac-purple: #B58EDE;
+            --pokedex-red: #DC0A2D;
+            --pokedex-dark-red: #8B0000;
+            --screen-bg: #232323;
+            --screen-text: #E0E0E0;
+            --btn-blue: #28AAFD;
+            --btn-green: #51AE5F;
+            --btn-yellow: #FFCB05;
+            --led-blue: #3B4CCA;
+            --case-padding: 15px;
         }
 
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
+            user-select: none;
+            /* Prevent text selection */
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Zen Maru Gothic', sans-serif;
-            background-color: var(--ac-green);
-            background-image:
-                repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 255, 255, 0.2) 20px, rgba(255, 255, 255, 0.2) 40px);
+            background-color: #2a2a2a;
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            color: var(--ac-dark);
-            overflow-x: hidden;
-            padding-bottom: 40px;
+            color: var(--screen-text);
+            overflow: hidden;
         }
 
-        .status-bar {
+        /* --- Pokedex Outer Case --- */
+        .pokedex-case {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            /* Full screen on mobile */
+            background-color: var(--pokedex-red);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #citySelect {
-            appearance: none;
-            background: var(--ac-yellow);
-            border: 2px solid white;
-            padding: 8px 30px 8px 15px;
-            border-radius: 20px;
-            font-family: 'Zen Maru Gothic', sans-serif;
-            font-weight: 900;
-            color: var(--ac-brown);
-            font-size: 1rem;
-            cursor: pointer;
-            outline: none;
-            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23796452' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 5px center;
-            background-size: 16px;
-        }
-
-        .btn-geo {
-            background: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
-            transition: transform 0.1s;
-        }
-
-        .btn-geo:active {
-            transform: scale(0.9);
-        }
-
-        .update-pill {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .hero-card {
-            background: var(--ac-cream);
-            border-radius: 35px;
-            padding: 30px 25px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            border: 4px solid white;
-            margin-bottom: 25px;
+            flex-direction: column;
             position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 0;
+            font-family: 'Roboto Mono', monospace;
         }
 
-        .hero-period {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--ac-blue);
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            border: 3px solid white;
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .hero-temp-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .hero-icon {
-            font-size: 5rem;
-            filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.1));
-            animation: bounce 3s infinite;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
+        @media (min-width: 481px) {
+            .pokedex-case {
+                height: 90vh;
+                border-radius: 15px;
+                border-bottom-right-radius: 50px;
+                border: 3px solid #5d0000;
             }
         }
 
-        .hero-temp {
-            font-size: 4.5rem;
-            font-weight: 900;
-            color: var(--ac-brown);
-            line-height: 1;
-        }
-
-        .hero-desc {
-            font-size: 1.5rem;
-            color: #8A7B70;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 25px;
-            padding: 15px;
-            border: 3px solid white;
-            text-align: center;
-        }
-
-        .info-title {
-            font-size: 0.9rem;
-            color: #796452;
-            font-weight: bold;
-            margin-bottom: 5px;
+        /* --- Top Sensor Bar --- */
+        .top-bar {
+            height: 90px;
+            background-color: var(--pokedex-red);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .astro-row {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            font-size: 0.9rem;
-            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-            padding-bottom: 4px;
+            /* Lens left, Buttons right */
+            padding: 0 20px;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid var(--pokedex-dark-red);
+            flex-shrink: 0;
+            z-index: 10;
         }
 
-        .astro-row:last-child {
-            border-bottom: none;
-        }
-
-        .astro-label {
-            color: #888;
-        }
-
-        .astro-time {
-            font-weight: 900;
-            color: var(--ac-brown);
-        }
-
-        .temp-diff-val {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: var(--ac-orange);
-            margin: 10px 0;
-        }
-
-        .temp-diff-desc {
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            color: white;
-            margin-bottom: 15px;
-            margin-left: 10px;
-            font-weight: 900;
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .scroll-container {
+        .lens-cluster {
             display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding-bottom: 10px;
-            scrollbar-width: none;
+            align-items: flex-start;
         }
 
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .mini-card {
-            min-width: 140px;
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 25px;
-            padding: 20px 15px;
-            text-align: center;
-            border: 3px solid white;
+        /* The Big Blue Lens */
+        .camera-lens {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #4facff, var(--led-blue), #001f5c);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-right: 15px;
+            position: relative;
             flex-shrink: 0;
         }
 
-        .mini-time {
-            background: var(--ac-green);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 10px;
-            font-weight: bold;
+        .camera-lens::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 15px;
+            height: 15px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
         }
 
-        .mini-icon {
-            font-size: 2.5rem;
-            margin: 5px 0;
+        .mini-leds {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
         }
 
-        .mini-temp {
+        .mini-led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .led-red {
+            background: #FF0000;
+        }
+
+        .led-yellow {
+            background: #FFFF00;
+        }
+
+        .led-green {
+            background: #00FF00;
+        }
+
+        /* Top Right Buttons Group */
+        .top-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #222;
+            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.4), 2px 2px 0 rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--ac-dark);
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            margin-bottom: 2px;
         }
 
-        .loading-screen {
-            position: fixed;
+        .action-btn:active {
+            transform: scale(0.95);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-blue {
+            background-color: var(--btn-blue);
+        }
+
+        .btn-orange {
+            background-color: #FFA500;
+        }
+
+        .btn-label {
+            font-size: 0.5rem;
+            color: #333;
+            /* Dark text on red bg */
+            font-weight: bold;
+            font-family: 'Press Start 2P', cursive;
+            text-transform: uppercase;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Main Screen Area (Maximized) --- */
+        .screen-container {
+            flex: 1;
+            background-color: #DEDEDE;
+            margin: var(--case-padding);
+            padding: 20px 35px;
+            /* Side padding for arrows */
+            border-radius: 8px 8px 30px 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Arrow Navigation */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 60px;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+            /* Inactive color */
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 20;
+            border: 2px solid #555;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-arrow:active {
+            background-color: #222;
+            border-color: #000;
+            color: var(--btn-yellow);
+        }
+
+        .arrow-left {
+            left: 0;
+            border-radius: 0 10px 10px 0;
+            border-left: none;
+        }
+
+        .arrow-right {
+            right: 0;
+            border-radius: 10px 0 0 10px;
+            border-right: none;
+        }
+
+        /* Triangle Icon */
+        .triangle {
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        .tri-left {
+            border-right: 12px solid #888;
+        }
+
+        .tri-right {
+            border-left: 12px solid #888;
+        }
+
+        .nav-arrow:active .tri-left {
+            border-right-color: var(--btn-yellow);
+        }
+
+        .nav-arrow:active .tri-right {
+            border-left-color: var(--btn-yellow);
+        }
+
+
+        /* Inner Display (Black Screen) */
+        .main-display {
+            flex: 1;
+            background-color: var(--screen-bg);
+            border-radius: 4px;
+            border: 2px solid #555;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Scanline effect */
+        .main-display::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Layout within Black Screen */
+        .fixed-screen-top {
+            flex-shrink: 0;
+            padding: 10px 10px 0 10px;
+            background-color: var(--screen-bg);
+            z-index: 2;
+            border-bottom: 2px solid #444;
+        }
+
+        .scroll-screen-bottom {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: #555 var(--screen-bg);
+        }
+
+        .scroll-screen-bottom::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-screen-bottom::-webkit-scrollbar-track {
+            background: var(--screen-bg);
+        }
+
+        .scroll-screen-bottom::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+
+        /* --- Content Styling --- */
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+
+        .city-name-display {
+            font-family: 'Press Start 2P', cursive;
+            color: #FFF;
+            font-size: 1.1rem;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .clock-display {
+            color: var(--btn-green);
+            font-weight: bold;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-title {
+            color: var(--btn-yellow);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #555;
+            padding-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .hero-temp {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #FFF;
+        }
+
+        .temp-diff-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .advice-box {
+            background: rgba(81, 174, 95, 0.2);
+            border-left: 3px solid var(--btn-green);
+            padding: 8px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #ddd;
+        }
+
+        /* Loading / Error Overlays */
+        .screen-loading {
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--ac-green);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 999;
-            transition: opacity 0.5s;
+            color: var(--btn-green);
+            z-index: 50;
+            display: none;
+        }
+
+        /* Vent decoration (Bottom of case) */
+        .vent-deco {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            padding: 0 25px 15px 25px;
         }
     </style>
 </head>
 
 <body>
-    <div id="loading" class="loading-screen">
-        <div style="font-size: 4rem; animation: bounce 2s infinite;">☁️</div>
-        <p style="color: white; font-weight: bold; margin-top: 20px;">正在觀測雲的流動...</p>
-    </div>
-
-    <div class="status-bar">
-        <div class="controls">
-            <select id="citySelect" onchange="changeCity(this.value)">
-                <option value="kaohsiung">載入中...</option>
-            </select>
-            <button class="btn-geo" onclick="geoFindMe()" title="定位我的位置">📍</button>
-        </div>
-        <div id="updateTime" class="update-pill">--/--</div>
-    </div>
-
-    <div class="container" id="mainContent" style="display: none;">
-        <div id="heroCard"></div>
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-title">🌡️ 溫差提醒</div>
-                <div id="tempDiffContent">
-                    <div style="color:#aaa; font-size:0.8rem; margin-top:10px;">資料載入中...</div>
+    <div class="pokedex-case">
+        <!-- Top Sensor Bar & Controls -->
+        <div class="top-bar">
+            <!-- Left: Lens & LEDs -->
+            <div class="lens-cluster">
+                <div class="camera-lens"></div>
+                <!-- Small LEDs -->
+                <div class="mini-leds">
+                    <div class="mini-led led-red"></div>
+                    <div class="mini-led led-yellow"></div>
+                    <div class="mini-led led-green"></div>
                 </div>
             </div>
-            <div class="info-card">
-                <div class="info-title">🌙 日月星辰</div>
-                <div id="astroContent">
-                    <div style="color:#aaa; font-size:0.8rem; margin-top:10px;">資料載入中...</div>
+
+            <!-- Right: Action Buttons -->
+            <div class="top-controls">
+                <!-- LANG -->
+                <div class="action-group" onclick="toggleLang()">
+                    <div class="action-btn btn-orange">🌍</div>
+                    <div class="btn-label" id="btnLabelLang">LANG</div>
+                </div>
+                <!-- LOCATE -->
+                <div class="action-group" onclick="geoFindMe()">
+                    <div class="action-btn btn-blue">📍</div>
+                    <div class="btn-label" id="btnLabelLocate">LOCATE</div>
                 </div>
             </div>
         </div>
-        <h3 class="section-title">稍後預報</h3>
-        <div class="scroll-container" id="futureForecasts"></div>
+
+        <!-- Main Screen -->
+        <div class="screen-container">
+
+            <!-- Side Navigation Arrows (On the bezel) -->
+            <div class="nav-arrow arrow-left" onclick="prevCity()">
+                <div class="triangle tri-left"></div>
+            </div>
+            <div class="nav-arrow arrow-right" onclick="nextCity()">
+                <div class="triangle tri-right"></div>
+            </div>
+
+            <!-- Black Display -->
+            <div class="main-display">
+
+                <div class="screen-loading" id="loadingOverlay">
+                    <div style="text-align:center;">
+                        <div id="loadingText">CONNECTING...</div>
+                        <div style="font-size:2rem; margin-top:10px;">📶</div>
+                    </div>
+                </div>
+
+                <!-- Fixed Top: Location & Time & Hero Weather -->
+                <div class="fixed-screen-top">
+                    <div class="status-header">
+                        <div class="city-name-display" id="cityDisplay">Start...</div>
+                        <div class="clock-display" id="clockDisplay">00:00:00</div>
+                    </div>
+                    <!-- Hero Weather -->
+                    <div id="heroCard" class="info-card"
+                        style="text-align:center; margin-bottom: 5px; border:none; background:transparent;">
+                        <div style="color:#aaa;">WAITING...</div>
+                    </div>
+                </div>
+
+                <!-- Scrollable Bottom: Details -->
+                <div class="scroll-screen-bottom" id="contentArea">
+                    <!-- Health / Temp Diff -->
+                    <div class="info-card">
+                        <div class="info-title" id="lblTempDiff">🌡️ TEMP DIFF</div>
+                        <div id="tempDiffContent">--</div>
+                    </div>
+
+                    <!-- Astronomy -->
+                    <div class="info-card">
+                        <div class="info-title" id="lblAstro">🌙 ASTRO</div>
+                        <div id="astroContent">--</div>
+                    </div>
+
+                    <!-- Forecast -->
+                    <div class="info-card">
+                        <div class="info-title" id="lblForecast">📅 FORECAST</div>
+                        <div id="futureForecasts" style="display:flex; overflow-x:auto; gap:10px; padding-bottom:5px;">
+                            <!-- items -->
+                        </div>
+                    </div>
+
+                    <div style="height: 20px;"></div>
+                </div>
+            </div> <!-- End main-display -->
+        </div> <!-- End screen-container -->
+
+        <!-- Bottom Vent Decoration (Visual Balance) -->
+        <div class="vent-deco">
+            <div
+                style="width:30px; height:30px; background:#222; border-radius:50%; border:2px solid #5d0000; box-shadow: inset 2px 2px 5px #000;">
+            </div>
+            <div style="display:flex; gap:10px; align-items:flex-end;">
+                <div style="width:50px; height:8px; background:#5d0000; border-radius:4px;"></div>
+                <div style="width:50px; height:8px; background:#5d0000; border-radius:4px;"></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const BASE_URL = "http://localhost:3000";
+        const BASE_URL = "https://vibecoding-camp-task4-backend.zeabur.app";
         let CITIES_MAP = {};
+        let CITY_KEYS = [];
+        let currentIndex = 0;
+        let currentLang = 'zh'; // 'zh' or 'en'
+        let currentHealthData = null; // Store for lang switch re-render
+
+        const TRANSLATIONS = {
+            zh: {
+                tempDiff: "🌡️ 溫差提醒",
+                astro: "🌙 天文資訊",
+                forecast: "📅 天氣預報",
+                sun: "日出",
+                moon: "月出",
+                loading: "連線中...",
+                waiting: "等待資料...",
+                error: "資料錯誤",
+                locateErr: "無法定位",
+                safe: "暫無警報",
+                mor: "早", aft: "午", eve: "晚",
+                // Buttons
+                btnLang: "語言",
+                btnLocate: "定位"
+            },
+            en: {
+                tempDiff: "🌡️ TEMP DIFF",
+                astro: "🌙 ASTRO",
+                forecast: "📅 FORECAST",
+                sun: "SUN",
+                moon: "MOON",
+                loading: "CONNECTING...",
+                waiting: "WAITING...",
+                error: "DATA ERROR",
+                locateErr: "LOCATE ERR",
+                safe: "SAFE",
+                mor: "MOR", aft: "AFT", eve: "EVE",
+                // Buttons
+                btnLang: "LANG",
+                btnLocate: "LOCATE"
+            }
+        };
 
         const CITY_COORDS = {
             "taipei": { lat: 25.03, lon: 121.56 },
@@ -373,84 +583,136 @@
             "lienchiang": { lat: 26.15, lon: 119.92 }
         };
 
-        function getWeatherIcon(weather) {
-            if (!weather) return "🌤️";
-            if (weather.includes("晴")) return "☀️";
-            if (weather.includes("多雲")) return "⛅";
-            if (weather.includes("陰")) return "☁️";
-            if (weather.includes("雨")) return "🌧️";
-            if (weather.includes("雷")) return "⛈️";
-            return "🌤️";
-        }
-
-        function getTimePeriod(startTime) {
-            const hour = new Date(startTime).getHours();
-            if (hour >= 5 && hour < 11) return "早晨";
-            if (hour >= 11 && hour < 14) return "中午";
-            if (hour >= 14 && hour < 18) return "下午";
-            if (hour >= 18 && hour < 23) return "晚上";
-            return "深夜";
-        }
+        // --- Core Logic ---
 
         async function init() {
+            startClock();
+            updateUILatels();
             try {
                 const res = await fetch(BASE_URL + "/");
                 const data = await res.json();
                 if (data.cities) {
                     CITIES_MAP = data.cities;
-                    renderCityOptions(data.cities);
+                    CITY_KEYS = Object.keys(data.cities);
+                    // Default to Kaohsiung or 0
+                    const kIndex = CITY_KEYS.indexOf('kaohsiung');
+                    currentIndex = kIndex >= 0 ? kIndex : 0;
+                    changeCity(CITY_KEYS[currentIndex]);
                 }
-                changeCity('kaohsiung');
             } catch (e) {
                 console.error("Init failed", e);
-                alert("無法連接伺服器，請確保後端已啟動！");
+                document.getElementById('cityDisplay').innerText = "ERR";
             }
         }
 
-        function renderCityOptions(cities) {
-            const select = document.getElementById('citySelect');
-            select.innerHTML = '';
-            for (const [key, name] of Object.entries(cities)) {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = name;
-                select.appendChild(option);
+        function startClock() {
+            function update() {
+                const now = new Date();
+                document.getElementById('clockDisplay').innerText = now.toLocaleTimeString('en-US', { hour12: false });
             }
+            setInterval(update, 1000);
+            update();
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateUILatels();
+
+            // Refresh Header City Name using current key
+            const cityKey = CITY_KEYS[currentIndex];
+            if (cityKey) {
+                const name = currentLang === 'zh' ? (CITIES_MAP[cityKey] || cityKey) : cityKey.toUpperCase();
+                document.getElementById('cityDisplay').innerText = name;
+            }
+
+            // Re-render Health Advice if exists
+            if (currentHealthData) {
+                renderHealth(currentHealthData);
+            }
+        }
+
+        function updateUILatels() {
+            const t = TRANSLATIONS[currentLang];
+            document.getElementById('lblTempDiff').innerText = t.tempDiff;
+            document.getElementById('lblAstro').innerText = t.astro;
+            document.getElementById('lblForecast').innerText = t.forecast;
+            document.getElementById('loadingText').innerText = t.loading;
+
+            // Button Labels
+            document.getElementById('btnLabelLang').innerText = t.btnLang;
+            document.getElementById('btnLabelLocate').innerText = t.btnLocate;
         }
 
         async function changeCity(cityKey) {
-            const loading = document.getElementById('loading');
+            const loading = document.getElementById('loadingOverlay');
             loading.style.display = 'flex';
-            loading.style.opacity = '1';
 
-            document.getElementById('citySelect').value = cityKey;
+            // Update Header Name
+            const name = currentLang === 'zh' ? (CITIES_MAP[cityKey] || cityKey) : cityKey.toUpperCase();
+            document.getElementById('cityDisplay').innerText = name;
 
             try {
-                // Using string concatenation to avoid syntax issues
                 const pWeather = fetch(BASE_URL + "/api/weather/" + cityKey).then(r => r.json());
                 const pHealth = fetch(BASE_URL + "/api/health/temp-difference/" + cityKey).then(r => r.json());
                 const pSun = fetch(BASE_URL + "/api/astronomy/sun/" + cityKey).then(r => r.json());
                 const pMoon = fetch(BASE_URL + "/api/astronomy/moon/" + cityKey).then(r => r.json());
 
-                const pDelay = new Promise(r => setTimeout(r, 800));
+                await new Promise(r => setTimeout(r, 400)); // Slight delay
 
                 const [weatherData, healthData, sunData, moonData] = await Promise.all([
-                    pWeather, pHealth, pSun, pMoon, pDelay
+                    pWeather, pHealth, pSun, pMoon
                 ]);
 
                 if (weatherData.success) {
                     renderWeather(weatherData.data);
+
+                    // Store health data global for language toggle
+                    currentHealthData = healthData.data;
                     renderHealth(healthData.data);
+
                     renderAstronomy(sunData.data, moonData.data);
-                    document.getElementById('mainContent').style.display = 'block';
                 }
             } catch (e) {
                 console.error(e);
-                alert("資料載入發生錯誤: " + e.message);
             } finally {
-                loading.style.opacity = '0';
-                setTimeout(() => { loading.style.display = 'none'; }, 500);
+                loading.style.display = 'none';
             }
+        }
+
+        function nextCity() {
+            if (CITY_KEYS.length === 0) return;
+            currentIndex = (currentIndex + 1) % CITY_KEYS.length;
+            changeCity(CITY_KEYS[currentIndex]);
+        }
+
+        function prevCity() {
+            if (CITY_KEYS.length === 0) return;
+            currentIndex = (currentIndex - 1 + CITY_KEYS.length) % CITY_KEYS.length;
+            changeCity(CITY_KEYS[currentIndex]);
+        }
+
+        // --- Swipe ---
+        let touchstartX = 0;
+        let touchendX = 0;
+        const screenDiv = document.querySelector('.screen-container');
+
+        screenDiv.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
+        screenDiv.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            if (touchendX < touchstartX - 50) nextCity();
+            if (touchendX > touchstartX + 50) prevCity();
+        });
+
+        // --- Rendering ---
+        function getWeatherIcon(weather) {
+            if (!weather) return "🌤️";
+            const w = weather;
+            // Simple mapping
+            if (w.includes("晴")) return "☀️";
+            if (w.includes("雲") || w.includes("陰")) return "☁️";
+            if (w.includes("雨")) return "🌧️";
+            if (w.includes("雷")) return "⛈️";
+            return "🌤️";
         }
 
         function renderWeather(data) {
@@ -459,30 +721,31 @@
             const avgTemp = Math.round((parseInt(current.maxTemp) + parseInt(current.minTemp)) / 2);
 
             document.getElementById('heroCard').innerHTML = `
-                <div class="hero-card">
-                    <div class="hero-period">${getTimePeriod(current.startTime)}</div>
-                    <div class="hero-temp-container">
-                        <div class="hero-icon">${getWeatherIcon(current.weather)}</div>
-                        <div class="hero-temp">${avgTemp}°</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:3rem;">${getWeatherIcon(current.weather)}</div>
+                    <div style="text-align:right;">
+                        <div class="hero-temp">${avgTemp}°C</div>
+                        <div style="color:var(--btn-yellow); font-size:0.8rem;">${current.weather}</div>
                     </div>
-                    <div class="hero-desc">${current.weather}</div>
-                    <div style="display:flex; justify-content:center; gap:20px; color:#796452; font-weight:bold;">
-                        <div>☔ ${current.rain}</div>
-                        <div>🌡️ ${current.minTemp} ~ ${current.maxTemp}</div>
-                    </div>
+                </div>
+                <div style="margin-top:5px; display:flex; justify-content:space-around; font-size:0.7rem; color:#aaa;">
+                    <div>🌧️ ${current.rain}</div>
+                    <div>🌡️ ${current.minTemp} ~ ${current.maxTemp}</div>
                 </div>
             `;
 
             const scrollContainer = document.getElementById('futureForecasts');
             scrollContainer.innerHTML = '';
+            const t = TRANSLATIONS[currentLang];
+
             others.forEach(f => {
                 const hour = new Date(f.startTime).getHours();
-                const p = hour < 12 ? "早上" : (hour < 18 ? "下午" : "晚上");
+                const p = hour < 12 ? t.mor : (hour < 18 ? t.aft : t.eve);
                 scrollContainer.innerHTML += `
-                    <div class="mini-card">
-                        <div class="mini-time">${p}</div>
-                        <div class="mini-icon">${getWeatherIcon(f.weather)}</div>
-                        <div class="mini-temp">${f.minTemp}°-${f.maxTemp}°</div>
+                    <div style="min-width:60px; text-align:center; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;">
+                        <div style="font-size:0.6rem; color:#888;">${p}</div>
+                        <div style="font-size:1.2rem;">${getWeatherIcon(f.weather)}</div>
+                        <div style="font-size:0.7rem;">${parseInt(f.minTemp)}°</div>
                     </div>
                 `;
             });
@@ -490,36 +753,40 @@
 
         function renderHealth(data) {
             const div = document.getElementById('tempDiffContent');
+            const t = TRANSLATIONS[currentLang];
 
-            if (!data || data.tempDiffIndex === undefined || data.tempDiffIndex === null) {
-                div.innerHTML = "<small>無資料</small>";
+            if (!data || data.tempDiffIndex === undefined) {
+                div.innerHTML = "<small>NO DATA</small>";
                 return;
             }
 
-            try {
-                const val = data.tempDiffIndex;
-                const warning = data.tempDiffWarning || "";
-                const advice = data.clothingAdvice || "暫無建議";
+            const val = data.tempDiffIndex;
+            const warning = data.tempDiffWarning || t.safe;
 
-                // Color logic: <6 Green, 6-9 Orange, >=10 Red
-                const color = val >= 10 ? '#ff4d4d' : (val >= 6 ? '#FFAA5E' : '#7DE1A9');
-
-                div.innerHTML = `
-                    <div class="temp-diff-val" style="color:${color}">${val}</div>
-                    <div class="temp-diff-desc">${data.locationName} 最大溫差</div>
-                    <div style="font-size:0.8rem; color:${warning ? '#ff4d4d' : '#888'}; font-weight:bold; margin-bottom:5px;">${warning || "暫無警報"}</div>
-                    <div style="font-size:0.8rem; color:#555; background:#f0f0f0; padding:5px; border-radius:5px; margin-top:5px; line-height: 1.4;">
-                        🧥 ${advice}
-                    </div>
-                `;
-            } catch (e) {
-                console.error("Render Health Error:", e);
-                div.innerHTML = "<small>資料格式錯誤</small>";
+            // Handle advice object {zh, en} or string
+            let adviceText = "";
+            if (typeof data.clothingAdvice === 'object') {
+                adviceText = data.clothingAdvice[currentLang] || data.clothingAdvice.zh;
+            } else {
+                adviceText = data.clothingAdvice;
             }
+
+            const color = val >= 10 ? '#ff4d4d' : (val >= 6 ? '#FFAA5E' : '#7DE1A9');
+
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div class="temp-diff-val" style="color:${color}">${val}</div>
+                    <div style="font-size:0.8rem; color:${data.tempDiffWarning ? '#ff4d4d' : '#888'};">${warning}</div>
+                </div>
+                <div class="advice-box">
+                    🧥 ${adviceText}
+                </div>
+            `;
         }
 
         function renderAstronomy(sunData, moonData) {
             const div = document.getElementById('astroContent');
+            const t = TRANSLATIONS[currentLang];
             try {
                 const now = new Date();
                 const offset = now.getTimezoneOffset() * 60000;
@@ -535,63 +802,65 @@
                 const sunLoc = getInfo(sunData);
                 const moonLoc = getInfo(moonData);
 
-                let html = '';
+                let html = '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">';
                 if (sunLoc) {
                     html += `
-                    <div class="astro-row">
-                        <span class="astro-label">🌞 日出</span>
-                        <span class="astro-time">${sunLoc.SunRiseTime || '--:--'}</span>
-                    </div>
-                    <div class="astro-row">
-                        <span class="astro-label">🌚 日落</span>
-                        <span class="astro-time">${sunLoc.SunSetTime || '--:--'}</span>
+                    <div>
+                        <div style="color:var(--btn-yellow); font-size:0.7rem;">${t.sun}</div>
+                        <div>🌞 ${sunLoc.SunRiseTime || '--'}</div>
+                        <div>🌚 ${sunLoc.SunSetTime || '--'}</div>
                     </div>`;
-                } else {
-                    html += `<div style="font-size:0.8rem; color:#aaa">無日出資料</div>`;
                 }
-
                 if (moonLoc) {
                     html += `
-                    <div class="astro-row">
-                        <span class="astro-label">🌛 月出</span>
-                        <span class="astro-time">${moonLoc.MoonRiseTime || '--:--'}</span>
+                    <div>
+                        <div style="color:#aaa; font-size:0.7rem;">${t.moon}</div>
+                        <div>🌛 ${moonLoc.MoonRiseTime || '--'}</div>
                     </div>`;
                 }
+                html += '</div>';
                 div.innerHTML = html;
             } catch (e) {
-                div.innerHTML = "<small>資料讀取失敗</small>";
-                console.error("Render Astro Error:", e);
+                div.innerHTML = "<small>DATA ERROR</small>";
             }
         }
 
         function geoFindMe() {
             if (!navigator.geolocation) {
-                alert("瀏覽器不支援地理位置功能");
+                alert("Geo Not Supported");
                 return;
             }
-            const loading = document.getElementById('loading');
+            const loading = document.getElementById('loadingOverlay');
             loading.style.display = 'flex';
-            loading.style.opacity = '1';
+
             navigator.geolocation.getCurrentPosition(success, error);
 
             function success(position) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 let minDist = Infinity;
-                let nearestCity = 'taipei';
+                let nearestKey = 'taipei';
+
                 for (const [key, coords] of Object.entries(CITY_COORDS)) {
                     const d = Math.sqrt(Math.pow(lat - coords.lat, 2) + Math.pow(lon - coords.lon, 2));
                     if (d < minDist) {
                         minDist = d;
-                        nearestCity = key;
+                        nearestKey = key;
                     }
                 }
-                changeCity(nearestCity);
+
+                const newIndex = CITY_KEYS.indexOf(nearestKey);
+                if (newIndex >= 0) {
+                    currentIndex = newIndex;
+                    changeCity(nearestKey);
+                } else {
+                    loading.style.display = 'none';
+                }
             }
 
             function error() {
                 loading.style.display = 'none';
-                alert("無法取得您的位置");
+                alert(TRANSLATIONS[currentLang].locateErr);
             }
         }
 
